@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>National Crime Statistics Portal (SBA)</title>
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#101a33;
+      --text:#e9eefc;
+      --muted:#b9c4e6;
+      --accent:#ff4d5a;
+      --line: rgba(255,255,255,.12);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(1200px 600px at 15% 10%, rgba(255,77,90,.18), transparent 60%),
+                  radial-gradient(1000px 500px at 85% 20%, rgba(70,140,255,.14), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.4;
+    }
+
+    a{ color: #cfe0ff; text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+
+    header{
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .wrap{ max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+    .topbar{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 260px;
+    }
+
+    .brand img{
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: rgba(255,255,255,.06);
+      padding: 8px;
+    }
+
+    .brand h1{
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: .2px;
+    }
+    .brand p{
+      margin: 2px 0 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    nav a{
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius: 999px;
+      font-size: 13px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .hero{
+      padding: 22px 16px 10px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:16px;
+    }
+
+    @media (max-width: 900px){
+      .hero-grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: rgba(16,26,51,.9);
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+
+    .card h2{
+      margin: 0 0 8px 0;
+      font-size: 18px;
+    }
+
+    .pill{
+      display:inline-block;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,77,90,.15);
+      border: 1px solid rgba(255,77,90,.35);
+      color: #ffd7da;
+      margin-right: 8px;
+      margin-top: 6px;
+    }
+
+    .muted{ color: var(--muted); }
+
+    .kpi{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .kpi > div{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .kpi .label{ color: var(--muted); font-size: 12px; }
+    .kpi .value{ font-size: 22px; font-weight: 700; margin-top: 4px; }
+
+    section{ scroll-margin-top: 90px; }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin: 22px 0 10px;
+    }
+
+    .section-title h3{
+      margin:0;
+      font-size: 18px;
+    }
+
+    .tools{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    input[type="search"]{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.2);
+      color: var(--text);
+      min-width: 260px;
+      outline:none;
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+    }
+
+    th, td{
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align:left;
+      font-size: 14px;
+    }
+    th{
+      background: rgba(255,255,255,.06);
+      font-size: 13px;
+      color:#dbe6ff;
+      position: sticky;
+      top: 0;
+    }
+    tfoot td{
+      font-weight: 700;
+      background: rgba(255,255,255,.06);
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 900px){
+      .grid-2{ grid-template-columns: 1fr; }
+    }
+
+    .parish-links{
+      columns: 2;
+      column-gap: 18px;
+      padding-left: 16px;
+      margin: 10px 0 0;
+    }
+    @media (max-width: 700px){
+      .parish-links{ columns: 1; }
+    }
+
+    .parish-links li{ margin: 6px 0; }
+
+    .mini{
+      font-size:12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    footer{
+      border-top: 1px solid var(--line);
+      padding: 18px 0 28px;
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tag{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      margin: 6px 8px 0 0;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <!-- Put your SBA logo file beside this HTML and name it "logo.png" -->
+        <img src="logo.png" alt="Crime Stats Logo">
+        <div>
+          <h1>National Crime Statistics Portal</h1>
+          <p>SBA Web Design | Jamaica – 14 Parishes</p>
+        </div>
+      </div>
+
+      <nav aria-label="Main navigation">
+        <a href="#overview">Overview</a>
+        <a href="#parishes">Parish Links</a>
+        <a href="#stats">Crime Statistics</a>
+        <a href="#mayors">Mayor Contacts</a>
+        <a href="#links">External Links</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="hero">
+    <div class="hero-grid">
+      <div class="card">
+        <h2>Public Information Dashboard</h2>
+        <p class="muted">
+          This page provides a clear summary of crime statistics across Jamaica’s fourteen parishes,
+          with quick navigation links and official contact information for each parish.
+        </p>
+
+        <span class="pill">Fast parish navigation</span>
+        <span class="pill">Official contact directory</span>
+        <span class="pill">SBA-ready layout</span>
+
+        <p class="mini">
+          Note: Data shown is based on the provided SBA table and is presented for educational purposes.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>National Totals (All Parishes)</h2>
+        <div class="kpi">
+          <div>
+            <div class="label">Total Crimes Committed</div>
+            <div class="value">4,675</div>
+          </div>
+          <div>
+            <div class="label">Total Fatalities</div>
+            <div class="value">3,545</div>
+          </div>
+          <div>
+            <div class="label">Total Crimes Solved</div>
+            <div class="value">1,866</div>
+          </div>
+          <div>
+            <div class="label">Total Unsolved Crimes</div>
+            <div class="value">2,809</div>
+          </div>
+        </div>
+
+        <div class="mini">
+          Tip: Use the search box below to quickly find a parish in the tables.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARISH LINKS -->
+  <section id="parishes">
+    <div class="section-title">
+      <h3>Parish Crime Statistics Links (Hyperlink Navigation)</h3>
+      <div class="tools">
+        <a class="tag" href="#stats">Go to main table</a>
+        <a class="tag" href="#mayors">Go to contacts</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="muted" style="margin-top:0;">
+        Click any parish name to jump directly to its section.
+      </p>
+
+      <ol class="parish-links">
+        <li><a href="#p-clarendon">Clarendon</a></li>
+        <li><a href="#p-hanover">Hanover</a></li>
+        <li><a href="#p-kingston">Kingston</a></li>
+        <li><a href="#p-manchester">Manchester</a></li>
+        <li><a href="#p-portland">Portland</a></li>
+        <li><a href="#p-standrew">St Andrew</a></li>
+        <li><a href="#p-stann">St Ann</a></li>
+        <li><a href="#p-stcatherine">St Catherine</a></li>
+        <li><a href="#p-stelizabeth">St Elizabeth</a></li>
+        <li><a href="#p-stjames">St James</a></li>
+        <li><a href="#p-stmary">St Mary</a></li>
+        <li><a href="#p-stthomas">St Thomas</a></li>
+        <li><a href="#p-trelawny">Trelawny</a></li>
+        <li><a href="#p-westmoreland">Westmoreland</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-title">
+      <h3>Pivot Table – Crime Statistics by Parish</h3>
+      <div class="tools">
+        <input id="crimeSearch" type="search" placeholder="Search parish (e.g., St Mary, Kingston)" />
+        <a class="tag" href="#parishes">Back to parish links</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <table aria-label="Crime statistics table">
+        <thead>
+          <tr>
+            <th>Parish</th>
+            <th>Total Crimes Committed</th>
+            <th>Total Fatalities</th>
+            <th>Total Crimes Solved</th>
+            <th>Total Unsolved Crimes</th>
+          </tr>
+        </thead>
+
+        <tbody id="crimeTableBody">
+          <tr><td><a href="#p-clarendon">Clarendon</a></td><td>350</td><td>180</td><td>160</td><td>190</td></tr>
+          <tr><td><a href="#p-hanover">Hanover</a></td><td>230</td><td>120</td><td>90</td><td>140</td></tr>
+          <tr><td><a href="#p-kingston">Kingston</a></td><td>650</td><td>570</td><td>125</td><td>525</td></tr>
+          <tr><td><a href="#p-manchester">Manchester</a></td><td>260</td><td>140</td><td>120</td><td>140</td></tr>
+          <tr><td><a href="#p-portland">Portland</a></td><td>210</td><td>130</td><td>85</td><td>125</td></tr>
+          <tr><td><a href="#p-standrew">St Andrew</a></td><td>290</td><td>250</td><td>100</td><td>190</td></tr>
+          <tr><td><a href="#p-stann">St Ann</a></td><td>300</td><td>260</td><td>140</td><td>160</td></tr>
+          <tr><td><a href="#p-stcatherine">St Catherine</a></td><td>480</td><td>420</td><td>210</td><td>270</td></tr>
+          <tr><td><a href="#p-stelizabeth">St Elizabeth</a></td><td>310</td><td>220</td><td>150</td><td>160</td></tr>
+          <tr><td><a href="#p-stjames">St James</a></td><td>520</td><td>460</td><td>240</td><td>280</td></tr>
+          <tr><td><a href="#p-stmary">St Mary</a></td><td>275</td><td>160</td><td>110</td><td>165</td></tr>
+          <tr><td><a href="#p-stthomas">St Thomas</a></td><td>210</td><td>150</td><td>76</td><td>134</td></tr>
+          <tr><td><a href="#p-trelawny">Trelawny</a></td><td>180</td><td>95</td><td>70</td><td>110</td></tr>
+          <tr><td><a href="#p-westmoreland">Westmoreland</a></td><td>410</td><td>390</td><td>190</td><td>220</td></tr>
+        </tbody>
+
+        <tfoot>
+          <tr><td>TOTAL</td><td>4,675</td><td>3,545</td><td>1,866</td><td>2,809</td></tr>
+        </tfoot>
+      </table>
+
+      <p class="mini">
+        Click a parish name above to jump to its detailed section below.
+      </p>
+    </div>
+  </section>
+
+  <!-- PARISH DETAIL SECTIONS (for hyperlink navigation) -->
+  <section id="parish-details">
+    <div class="section-title">
+      <h3>Parish Details</h3>
+      <div class="tools">
+        <a class="tag" href="#stats">Back to table</a>
+        <a class="tag" href="#mayors">View mayor contacts</a>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Repeatable “parish card” pattern -->
+      <div class="card" id="p-clarendon">
+        <h2>Clarendon</h2>
+        <div class="muted">Crimes: 350 | Fatalities: 180 | Solved: 160 | Unsolved: 190</div>
+        <p class="mini">Mayor Contact: <a href="#m-clarendon">View Clarendon contact</a></p>
+      </div>
+
+      <div class="card" id="p-hanover">
+        <h2>Hanover</h2>
+        <div class="muted">Crimes: 230 | Fatalities: 120 | Solved: 90 | Unsolved: 140</div>
+        <p class="mini">Mayor Contact: <a href="#m-hanover">View Hanover contact</a></p>
+      </div>
+
+      <div class="card" id="p-kingston">
+        <h2>Kingston</h2>
+        <div class="muted">Crimes: 650 | Fatalities: 570 | Solved: 125 | Unsolved: 525</div>
+        <p class="mini">Mayor Contact: <a href="#m-kingston">View Kingston contact</a></p>
+      </div>
+
+      <div class="card" id="p-manchester">
+        <h2>Manchester</h2>
+        <div class="muted">Crimes: 260 | Fatalities: 140 | Solved: 120 | Unsolved: 140</div>
+        <p class="mini">Mayor Contact: <a href="#m-manchester">View Manchester contact</a></p>
+      </div>
+
+      <div class="card" id="p-portland">
+        <h2>Portland</h2>
+        <div class="muted">Crimes: 210 | Fatalities: 130 | Solved: 85 | Unsolved: 125</div>
+        <p class="mini">Mayor Contact: <a href="#m-portland">View Portland contact</a></p>
+      </div>
+
+      <div class="card" id="p-standrew">
+        <h2>St Andrew</h2>
+        <div class="muted">Crimes: 290 | Fatalities: 250 | Solved: 100 | Unsolved: 190</div>
+        <p class="mini">Mayor Contact: <a href="#m-standrew">View St Andrew contact</a></p>
+      </div>
+
+      <div class="card" id="p-stann">
+        <h2>St Ann</h2>
+        <div class="muted">Crimes: 300 | Fatalities: 260 | Solved: 140 | Unsolved: 160</div>
+        <p class="mini">Mayor Contact: <a href="#m-stann">View St Ann contact</a></p>
+      </div>
+
+      <div class="card" id="p-stcatherine">
+        <h2>St Catherine</h2>
+        <div class="muted">Crimes: 480 | Fatalities: 420 | Solved: 210 | Unsolved: 270</div>
+        <p class="mini">Mayor Contact: <a href="#m-stcatherine">View St Catherine contact</a></p>
+      </div>
+
+      <div class="card" id="p-stelizabeth">
+        <h2>St Elizabeth</h2>
+        <div class="muted">Crimes: 310 | Fatalities: 220 | Solved: 150 | Unsolved: 160</div>
+        <p class="mini">Mayor Contact: <a href="#m-stelizabeth">View St Elizabeth contact</a></p>
+      </div>
+
+      <div class="card" id="p-stjames">
+        <h2>St James</h2>
+        <div class="muted">Crimes: 520 | Fatalities: 460 | Solved: 240 | Unsolved: 280</div>
+        <p class="mini">Mayor Contact: <a href="#m-stjames">View St James contact</a></p>
+      </div>
+
+      <div class="card" id="p-stmary">
+        <h2>St Mary</h2>
+        <div class="muted">Crimes: 275 | Fatalities: 160 | Solved: 110 | Unsolved: 165</div>
+        <p class="mini">Mayor Contact: <a href="#m-stmary">View St Mary contact</a></p>
+      </div>
+
+      <div class="card" id="p-stthomas">
+        <h2>St Thomas</h2>
+        <div class="muted">Crimes: 210 | Fatalities: 150 | Solved: 76 | Unsolved: 134</div>
+        <p class="mini">Mayor Contact: <a href="#m-stthomas">View St Thomas contact</a></p>
+      </div>
+
+      <div class="card" id="p-trelawny">
+        <h2>Trelawny</h2>
+        <div class="muted">Crimes: 180 | Fatalities: 95 | Solved: 70 | Unsolved: 110</div>
+        <p class="mini">Mayor Contact: <a href="#m-trelawny">View Trelawny contact</a></p>
+      </div>
+
+      <div class="card" id="p-westmoreland">
+        <h2>Westmoreland</h2>
+        <div class="muted">Crimes: 410 | Fatalities: 390 | Solved: 190 | Unsolved: 220</div>
+        <p class="mini">Mayor Contact: <a href="#m-westmoreland">View Westmoreland contact</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAYORS -->
+  <section id="mayors">
+    <div class="section-title">
+      <h3>Mayor / Parish Contact Directory</h3>
+      <div class="tools">
+        <input id="mayorSearch" type="search" placeholder="Search contact (name or parish)" />
+      </div>
+    </div>
+
+    <div class="card">
+      <table aria-label="Mayor contact table">
+        <thead>
+          <tr>
+            <th>Parish</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Office Address</th>
+            <th>Office Tel</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody id="mayorTableBody">
+          <tr id="m-stthomas"><td>St Thomas</td><td>Rohan</td><td>Beckford</td><td>5 West Palm Ave, Port Morant, St Thomas</td><td>876-922-4400</td><td><a href="mailto:rohan.beckford@yahoo.com">rohan.beckford@yahoo.com</a></td></tr>
+          <tr id="m-clarendon"><td>Clarendon</td><td>Jada</td><td>Bennett</td><td>14 Main Street, May Pen, Clarendon</td><td>876-955-2000</td><td><a href="mailto:jada.bennett@hotmail.com">jada.bennett@hotmail.com</a></td></tr>
+          <tr id="m-kingston"><td>Kingston</td><td>Ricardo</td><td>Campbell</td><td>12 Knutsford Blvd, Kingston 5</td><td>876-926-1000</td><td><a href="mailto:ricardo.campbell@gmail.com">ricardo.campbell@gmail.com</a></td></tr>
+          <tr id="m-portland"><td>Portland</td><td>Andre</td><td>Clarke</td><td>10a West Street, Port Antonio, Portland</td><td>876-993-4567</td><td><a href="mailto:andre.clarke@yahoo.com">andre.clarke@yahoo.com</a></td></tr>
+          <tr id="m-westmoreland"><td>Westmoreland</td><td>Marlon</td><td>Dixon</td><td>5 Sunshine Plaza, Negril, Westmoreland</td><td>876-957-4000</td><td><a href="mailto:marlon.dixon@gmail.com">marlon.dixon@gmail.com</a></td></tr>
+          <tr id="m-manchester"><td>Manchester</td><td>Tanisha</td><td>Gordon</td><td>8 Ward Ave, Mandeville, Manchester</td><td>876-625-1234</td><td><a href="mailto:tanisha.gordon@gmail.com">tanisha.gordon@gmail.com</a></td></tr>
+          <tr id="m-standrew"><td>St Andrew</td><td>Sashana</td><td>Grant</td><td>22 Constant Spring Rd, Kingston 10, St Andrew</td><td>876-988-3000</td><td><a href="mailto:sashana.grant@yahoo.com">sashana.grant@yahoo.com</a></td></tr>
+          <tr id="m-trelawny"><td>Trelawny</td><td>Latoya</td><td>Mullings</td><td>7 Harbour Street, Falmouth, Trelawny</td><td>876-617-1122</td><td><a href="mailto:latoya.mullings@gmail.com">latoya.mullings@gmail.com</a></td></tr>
+          <tr id="m-stcatherine"><td>St Catherine</td><td>Damion</td><td>Powell</td><td>33 King Street, Spanish Town, St Catherine</td><td>876-984-5555</td><td><a href="mailto:damion.powell@hotmail.com">damion.powell@hotmail.com</a></td></tr>
+          <tr id="m-stjames"><td>St James</td><td>Dwayne</td><td>Richards</td><td>Unit 4, Fairview Shopping Center, Montego Bay</td><td>876-953-8400</td><td><a href="mailto:dwayne.richards@gmail.com">dwayne.richards@gmail.com</a></td></tr>
+          <tr id="m-hanover"><td>Hanover</td><td>Tamara</td><td>Simpson</td><td>2 Marine Drive, Lucea, Hanover</td><td>876-956-3344</td><td><a href="mailto:tamara.simpson@hotmail.com">tamara.simpson@hotmail.com</a></td></tr>
+          <tr id="m-stann"><td>St Ann</td><td>Shanice</td><td>Thompson</td><td>45 Main Street, Ocho Rios, St Ann</td><td>876-974-2500</td><td><a href="mailto:shanice.thompson@yahoo.co">shanice.thompson@yahoo.co</a></td></tr>
+          <tr id="m-stmary"><td>St Mary</td><td>Althea</td><td>Walker</td><td>11 Stennett St, Port Maria, St Mary</td><td>876-994-2211</td><td><a href="mailto:althea.walker@yahoo.com">althea.walker@yahoo.com</a></td></tr>
+          <tr id="m-stelizabeth"><td>St Elizabeth</td><td>Kevon</td><td>Williams</td><td>15 High Street, Black River, St Elizabeth</td><td>876-965-9876</td><td><a href="mailto:kevon.williams@gmail.com">kevon.williams@gmail.com</a></td></tr>
+        </tbody>
+      </table>
+
+      <p class="mini">
+        Tip: You can click a parish in the Crime Table to jump to details, then jump here for contact.
+      </p>
+    </div>
+  </section>
+
+  <!-- EXTERNAL LINKS -->
+  <section id="links">
+    <div class="section-title">
+      <h3>Links of Interest (Official & Helpful)</h3>
+    </div>
+
+    <div class="card">
+      <p class="muted" style="margin-top:0;">
+        These links help citizens find official public safety and government information.
+      </p>
+
+      <div>
+        <a class="tag" target="_blank" rel="noopener" href="https://www.jcf.gov.jm/">Jamaica Constabulary Force (JCF)</a>
+        <a class="tag" target="_blank" rel="noopener" href="https://www.mns.gov.jm/">Ministry of National Security</a>
+        <a class="tag" target="_blank" rel="noopener" href="https://moj.gov.jm/">Ministry of Justice</a>
+        <a class="tag" target="_blank" rel="noopener" href="https://statinja.gov.jm/">STATIN (Statistics)</a>
+        <a class="tag" target="_blank" rel="noopener" href="https://jis.gov.jm/">Jamaica Information Service (JIS)</a>
+      </div>
+
+      <p class="mini">
+        You may replace or add more links if your teacher gave specific required sources.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap" style="padding:0;">
+      <div><strong>SBA Note:</strong> Web page created for educational use. Includes hyperlink navigation, tables, and contact information.</div>
+      <div class="mini">Prepared by: ______________________ | School: ______________________ | Date: ______________________</div>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+  // Simple table filters (SBA-friendly)
+  const crimeSearch = document.getElementById("crimeSearch");
+  const crimeRows = Array.from(document.querySelectorAll("#crimeTableBody tr"));
+
+  crimeSearch.addEventListener("input", () => {
+    const q = crimeSearch.value.toLowerCase().trim();
+    crimeRows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(q) ? "" : "none";
+    });
+  });
+
+  const mayorSearch = document.getElementById("mayorSearch");
+  const mayorRows = Array.from(document.querySelectorAll("#mayorTableBody tr"));
+
+  mayorSearch.addEventListener("input", () => {
+    const q = mayorSearch.value.toLowerCase().trim();
+    mayorRows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(q) ? "" : "none";
+    });
+  });
+</script>
+
+</body>
+</html>
